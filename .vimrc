@@ -42,6 +42,9 @@ Plug 'majutsushi/tagbar'
 "" YouCompleteMe
 Plug 'ycm-core/YouCompleteMe'
 
+"" VimWiki
+Plug 'vimwiki/vimwiki'
+
 call plug#end()
 
 set encoding=utf-8
@@ -104,6 +107,18 @@ packloadall
 " All messages and errors will be ignored.
 silent! helptags ALL
 
+function! ToggleGUICruft()
+  if &guioptions=='i'
+    exec('set guioptions=imTrL')
+  else
+    exec('set guioptions=i')
+  endif
+endfunction
+
+map <c-F11> <Esc>:call ToggleGUICruft()<cr>
+
+" by default, hide gui menus
+set guioptions=i
 set showcmd
 set tabstop=4
 set expandtab
