@@ -9,7 +9,7 @@ LOW_BAT=26          # lesser than this is considered low battery
 #
 #   $ ls -1 /sys/class/power_supply/
 #
-BAT_PATH=/sys/class/power_supply/BAT1
+BAT_PATH=/sys/class/power_supply/BAT0
 BAT_STAT=$BAT_PATH/status
 
 if [[ -f $BAT_PATH/charge_full ]]
@@ -41,8 +41,9 @@ then
         if [[ $bat_percent -lt $LOW_BAT && "$bs" = "Discharging" ]]
         then
             notify-send --urgency=critical --expire-time=5000 "$bat_percent% : Low Battery!"
-	    launched=$((launched+1))
-	    (( "$launched" == 3 )) && exit
+            play /home/bugra/.config/qtile/scripts/bat.wav
+            launched=$((launched+1))
+            (( "$launched" == 3 )) && exit
         fi
         sleep $POLL_INTERVAL
     done

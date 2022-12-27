@@ -1,6 +1,6 @@
 #!/bin/sh
 feh --bg-scale /usr/share/endeavouros/backgrounds/eos_wallpapers_community/Endy_vector_EOS-planet.png
-picom --config ~/.config/picom_qtile.conf & disown # --experimental-backends --vsync should prevent screen tearing on most setups if needed
+picom --config ~/.config/picom_qtile.conf & disown #   --experimental-backends --vsync should prevent screen tearing on most setups if needed
 
 # Low battery notifier
 ~/.config/qtile/scripts/check_battery.sh & disown

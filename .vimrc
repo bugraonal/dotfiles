@@ -45,6 +45,14 @@ Plug 'ycm-core/YouCompleteMe'
 "" VimWiki
 Plug 'vimwiki/vimwiki'
 
+"" fzf
+Plug '/usr/share/vim/vimfiles/plugin/fzf'
+
+"" markdown perview
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+
+"" latex syntax and preview
+Plug 'lervag/vimtex'
 call plug#end()
 
 set encoding=utf-8
@@ -88,6 +96,10 @@ set listchars=eol:¬,tab:>-,trail:~,extends:>,precedes:<,space:⌴
 nnoremap <C-Left> : tabp <CR>
 nnoremap <C-Right> : tabn <CR>
 
+" Navigate buffers
+nnoremap <C-M> : bn <CR>
+nnoremap <C-N> : bp <CR>
+
 set number relativenumber
 syntax on
 set backspace=indent,eol,start
@@ -96,7 +108,11 @@ highlight LineNR cterm=NONE ctermfg=DarkGrey ctermbg=NONE
 command -nargs=1 CopyAboveAndPaste execute "normal! y<args>k<args>jp"
 nnoremap <C-y> : CopyAboveAndPaste 
 
-colo mustang
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+nmap <silent> <C-g> <Plug>(ale_go_to_definition)
+
+colo desert
 
 set hlsearch
 
@@ -115,12 +131,20 @@ function! ToggleGUICruft()
   endif
 endfunction
 
+" Return to last edit position when opening files (You want this!)
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
+
 map <c-F11> <Esc>:call ToggleGUICruft()<cr>
 
 " by default, hide gui menus
 set guioptions=i
 set showcmd
 set tabstop=4
+set shiftwidth=4
 set expandtab
 set exrc
 set secure
+set incsearch

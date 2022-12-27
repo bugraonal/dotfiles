@@ -1,4 +1,5 @@
-from libqtile import widget
+#from libqtile import widget
+from qtile_extras import widget
 from libqtile.widget import base
 from libqtile.lazy import lazy
 
@@ -65,6 +66,7 @@ class PowerProfile(base._TextBox):
         ("padding", 3, "Padding left and right. Calculated if None."),
         ("update_interval", 0.2, "Update time in seconds."),
         ("balanced_char", "", "Character used for balanced profile"),
+        ("performance_char", "", "Character used for performance profile"),
         ("low_power_char", "", "Character used for low-power profile"),
         ("update_interval", 2, "Update time in seconds"),
     ]
@@ -72,7 +74,8 @@ class PowerProfile(base._TextBox):
     def __init__(self, **config):
         base._TextBox.__init__(self, "0", **config)
         self.add_defaults(PowerProfile.defaults)
-        self.profile = ''
+        self.profile = self._check_power_profile()
+        self._update_drawer()
         #self.add_callbacks({"Button1": self._toggle_mode})
 
     def _check_power_profile(self):
@@ -103,6 +106,8 @@ class PowerProfile(base._TextBox):
             self.text = self.balanced_char
         elif self.profile == 'low-power':
             self.text = self.low_power_char
+        elif self.profile == 'performance':
+            self.text = self.performance_char
         else:
             self.text = self.profile
 
@@ -111,15 +116,15 @@ class DynamicBattery(widget.Battery):
     def _configure(self, qtile, bar):
         widget.Battery._configure(self, qtile, bar)
         self.disp = 0
-        self.format = '{char} {percent:2.0%}'
+        self.format = '{char}:{percent:2.0%}'
         self.add_callbacks({"Button1": self._toggle_format})
 
     def _toggle_format(self):
         if self.disp == 0:
             self.disp = 1
-            self.format = '{char} {percent:2.0%} {hour:d}:{min:02d} {watt:.2f} W'
+            self.format = '{char}:{percent:2.0%} {hour:d}:{min:02d} {watt:.2f} W'
         else:
             self.disp = 0
-            self.format = '{char} {percent:2.0%}'
+            self.format = '{char}:{percent:2.0%}'
         self.update(self.poll())
         self.bar.draw()
