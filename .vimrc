@@ -1,7 +1,5 @@
-
+" ========= Plugins =========
 call plug#begin()
-
-Plug 'VundleVim/Vundle.vim'
 
 "" Status bar at bottom
 Plug 'vim-airline/vim-airline'
@@ -11,8 +9,13 @@ Plug 'edkolev/promptline.vim'
 "" Cool color scheme
 Plug 'croaker/mustang-vim'
 
+"" Extend % operation
+Plug 'adelarsq/vim-matchit'
+
 "" File navigation tree
 Plug 'preservim/nerdtree'
+Plug 'PhilRunninger/nerdtree-visual-selection'
+Plug 'PhilRunninger/nerdtree-buffer-ops'
 
 "" Auto complete using clang
 "Plug 'xavierd/clang_complete'
@@ -42,87 +45,103 @@ Plug 'majutsushi/tagbar'
 "" YouCompleteMe
 Plug 'ycm-core/YouCompleteMe'
 
+"" Git plugin
+Plug 'tpope/vim-fugitive'
+
 "" VimWiki
 Plug 'vimwiki/vimwiki'
 
 "" fzf
-Plug '/usr/share/vim/vimfiles/plugin/fzf'
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
 
 "" markdown perview
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 "" latex syntax and preview
 Plug 'lervag/vimtex'
+
+"" Indent line
+Plug 'Yggdroot/indentLine'
+
+"" Repeat custom commands
+Plug 'tpope/vim-repeat'
+
+"" Surround utility
+Plug 'tpope/vim-surround'
+
+"" Comment utility
+Plug 'tpope/vim-commentary'
+
 call plug#end()
 
-set encoding=utf-8
-
-" Deoplete
-let g:deoplete#enable_at_startup = 0
-"call deoplete#custom#option('sources', {
-"\ '_': ['ale', 'buffer', 'tag'],
-"\})
-"call deoplete#custom#source('ale', 'rank', '999')
-
-" Deoplete Clang
-"let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-6.0/lib/libclang.so'
-"let g:deoplete#sources#clang#clang_header='/usr/lib/llvm-6.0/lib/clang/6.0.0/include'
-
-
+" ========= Plugin Options =========
+"" ALE Options
+let g:ale_completion_enabled = 1
+let g:ale_completion_autoimport = 1
+let g:airline#extensions#ale#enabled = 1
+set omnifunc=ale#completion#OmniFunc
+"" Disable inline errors
+let g:ale_virtualtext_cursor = 0
+"" Show ale hover info in bubble
+let g:ale_floating_preview = 1
 
 let g:airline_powerline_fonts = 1
-let mapleader = ","
 
-let g:clang_library_path='/usr/lib/llvm-6.0/lib/libclang.so.1'
-let g:airline#extensions#ale#enabled = 1
-let g:ale_java_eclipselsp_path='/home/bugra/sources/eclipse.jdt.ls'
-
+"" PyDocString
 let g:pydocstring_doq_path='/home/bugra/.local/bin/doq'
 let g:pydocstring_fromatter='numpy'
 
+"" Indent line customization
+let g:indentLine_char = '│'
+
 " Clipboard functions
+let mapleader = ","
 nnoremap <leader>y "*y
 nnoremap <leader>Y "+y
 nnoremap <leader>p "*p
 nnoremap <leader>P "+p
 
+" ========= Appearance Customizations =========
 " Background fix for xterm-kitty
 set t_ut=
 
 " Use to see speacial chars
 set listchars=eol:¬,tab:>-,trail:~,extends:>,precedes:<,space:⌴
 
-" Navigate tabs
-nnoremap <C-Left> : tabp <CR>
-nnoremap <C-Right> : tabn <CR>
-
-" Navigate buffers
-nnoremap <C-M> : bn <CR>
-nnoremap <C-N> : bp <CR>
-
-set number relativenumber
-syntax on
-set backspace=indent,eol,start
 highlight LineNR cterm=NONE ctermfg=DarkGrey ctermbg=NONE
-
-command -nargs=1 CopyAboveAndPaste execute "normal! y<args>k<args>jp"
-nnoremap <C-y> : CopyAboveAndPaste 
-
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-nmap <silent> <C-g> <Plug>(ale_go_to_definition)
-
+highlight Pmenu ctermfg=DarkGrey ctermbg=Darkgrey
 colo desert
 
-set hlsearch
+" ========= Shortcuts =========
+" Navigate tabs
+nnoremap gh : tabp <CR>
+nnoremap gl : tabn <CR>
 
-" Load all plugins now.
-" Plugins need to be added to runtimepath before helptags can be generated.
+" New line in normal mode
+nnoremap <Enter> o<ESC>k
+nnoremap <S-Enter> O<ESC>j
+
+" Fuzzy
+nnoremap ff : Files <CR>
+nnoremap fb : Buffers <CR>
+
+" Navigate buffers
+nnoremap gn : bn <CR>
+nnoremap gm : bp <CR>
+
+" NERDTree shortcuts
+nnoremap <C-S-N> : NERDTreeToggle <CR>
+
+" ALE goto
+nmap <silent> gk <Plug>(ale_previous_wrap)
+nmap <silent> gj <Plug>(ale_next_wrap)
+nmap <silent> gd <Plug>(ale_go_to_definition)
+
 packloadall
-" Load all of the helptags now, after plugins have been loaded.
-" All messages and errors will be ignored.
 silent! helptags ALL
 
+" For gvim
 function! ToggleGUICruft()
   if &guioptions=='i'
     exec('set guioptions=imTrL')
@@ -130,21 +149,28 @@ function! ToggleGUICruft()
     exec('set guioptions=i')
   endif
 endfunction
+map <c-F11> <Esc>:call ToggleGUICruft()<cr>
 
+" ========= Options =========
 " Return to last edit position when opening files (You want this!)
 autocmd BufReadPost *
      \ if line("'\"") > 0 && line("'\"") <= line("$") |
      \   exe "normal! g`\"" |
      \ endif
 
-map <c-F11> <Esc>:call ToggleGUICruft()<cr>
-
+set hlsearch
+set number relativenumber
+syntax on
+set backspace=indent,eol,start
+set encoding=utf-8
 " by default, hide gui menus
 set guioptions=i
 set showcmd
 set tabstop=4
+set softtabstop=4
 set shiftwidth=4
 set expandtab
 set exrc
 set secure
 set incsearch
+set scrolloff=5
